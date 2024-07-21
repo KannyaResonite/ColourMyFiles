@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using Elements.Assets;
 using Elements.Core;
 using FrooxEngine;
 using FrooxEngine.UIX;
@@ -22,13 +23,25 @@ namespace ColourMyFiles
         private static ModConfigurationKey<float4> MeshColour = new ModConfigurationKey<float4>("MeshColour", "The colour for mesh files in the files window.", () => new float4(0f, 0.6f, 0.6f, 1f));
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> TextureColour = new ModConfigurationKey<float4>("TextureColour", "The colour for texture files in the files window.", () => new float4(0.20f, 0.15f, 0.30f, 1f));
+        private static ModConfigurationKey<float4> TextureColour = new ModConfigurationKey<float4>("TextureColour", "The colour for texture files in the files window.", () => new float4(RadiantUI_Constants.Sub.PURPLE.r, RadiantUI_Constants.Sub.PURPLE.g, RadiantUI_Constants.Sub.PURPLE.b, RadiantUI_Constants.Sub.PURPLE.a));
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> AudioColour = new ModConfigurationKey<float4>("AudioColour", "The colour for audio files in the files window.", () => new float4(0.26f, 1f, 0.48f, 1f));
+        private static ModConfigurationKey<float4> AudioColour = new ModConfigurationKey<float4>("AudioColour", "The colour for audio files in the files window.", () => new float4(RadiantUI_Constants.Sub.GREEN.r, RadiantUI_Constants.Sub.GREEN.g, RadiantUI_Constants.Sub.GREEN.b, RadiantUI_Constants.Sub.GREEN.a));
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> MetaColour = new ModConfigurationKey<float4>("MetaColour", "The colour for meta files in the files window.", () => new float4(0.26f, 0.08f, 0f, 1f));
+        private static ModConfigurationKey<float4> MetaColour = new ModConfigurationKey<float4>("MetaColour", "The colour for meta files in the files window.", () => new float4(RadiantUI_Constants.Sub.RED.r, RadiantUI_Constants.Sub.RED.g, RadiantUI_Constants.Sub.RED.b, RadiantUI_Constants.Sub.RED.a));
+        
+        [AutoRegisterConfigKey]
+        private static ModConfigurationKey<float4> ConfigColour = new ModConfigurationKey<float4>("ConfigColour", "The colour for config files in the files window.", () => new float4(RadiantUI_Constants.Sub.ORANGE.r, RadiantUI_Constants.Sub.ORANGE.g, RadiantUI_Constants.Sub.ORANGE.b, RadiantUI_Constants.Sub.ORANGE.a));
+        
+        [AutoRegisterConfigKey]
+        private static ModConfigurationKey<float4> TextColour = new ModConfigurationKey<float4>("TextColour", "The colour for text files in the files window.", () => new float4(0.3f, 0.3f, 0.3f, 1f));
+        
+        [AutoRegisterConfigKey]
+        private static ModConfigurationKey<float4> VideoColour = new ModConfigurationKey<float4>("VideoColour", "The colour for video files in the files window.", () => new float4(0f, 0f, 1f, 1f));
+        
+        [AutoRegisterConfigKey]
+        private static ModConfigurationKey<float4> DocumentColour = new ModConfigurationKey<float4>("DocumentColour", "The colour for document files in the files window.", () => new float4(0.8f, 0f, 0.8f, 1f));
         
         [AutoRegisterConfigKey]
         private static ModConfigurationKey<bool> HideMetaFiles = new ModConfigurationKey<bool>("HideMetaFiles", "Whether to hide meta files from the files window entirely.", () => false);
@@ -45,68 +58,59 @@ namespace ColourMyFiles
 
         private static bool OnChanges(ref BrowserItem __instance)
         {
-            if (__instance is FileSystemItem)
+            if (__instance is FileSystemItem fi)
             {
-                switch (Path.GetExtension(__instance.Button.Label.Content).ToLower())
+                var AssetType = AssetHelper.IdentifyClass($"{fi.BasePath}\\{fi.Name}");
+                
+                if (Config.GetValue(HideMetaFiles) && Path.GetExtension(fi.Name).ToLower() == ".meta")
                 {
-                    // folders are yellow, so i chose a different colour
-                    case ".fbx":
-                    case ".obj":
-                    case ".dae":
-                    case ".gtlf":
-                        __instance.SetColour(MeshColour);
-                        break;
-                
-                    case ".png":
-                    case ".jpg":
-                    case ".jpeg":
-                    case ".dds":
-                    case ".jfif":
-                    case ".webp":
-                    case ".tga":
-                    case ".gif":
-                    case ".exr":
-                        __instance.SetColour(TextureColour);
-                        break;
-                
-                    case ".wav":
-                    case ".ogg":
-                    case ".mp3":
-                    case ".wma":
-                        __instance.SetColour(AudioColour);
-                        break;
-                
-                    case ".meta":
-                        if (Config.GetValue(HideMetaFiles))
-                        {
-                            __instance.Slot.Destroy();
-                            break;
-                        }
-                    
-                        __instance.SetColour(MetaColour);
-                        break;
+                    __instance.Slot.Destroy();
+                    return true;
                 }
+
+                var TargetColour = GetClassColour(AssetType);
+
+                if (TargetColour == null)
+                {
+                    return true;
+                }
+                
+                __instance.SetColour(TargetColour.Value);
             }
             
             return true;
+        }
+        
+        public static colorX? GetClassColour(AssetClass assetClass)
+        {
+            return assetClass switch
+            {
+                AssetClass.Audio => new colorX(Config.GetValue(AudioColour)),
+                AssetClass.Document => new colorX(Config.GetValue(DocumentColour)),
+                AssetClass.Text => new colorX(Config.GetValue(TextColour)),
+                AssetClass.Model => new colorX(Config.GetValue(MeshColour)),
+                AssetClass.Object => new colorX(Config.GetValue(ConfigColour)),
+                AssetClass.Texture => new colorX(Config.GetValue(TextureColour)),
+                AssetClass.Video => new colorX(Config.GetValue(VideoColour)),
+                _ => null,
+            };
         }
     }
 
     public static class Extensions
     {
-        public static void SetColour(this BrowserItem Item, ModConfigurationKey<float4> ConfigColour) // Lazy and cleaner than repeated code or flow looking ugly from using a non-extension
+        public static void SetColour(this BrowserItem Item, colorX Colour) // Lazy and cleaner than repeated code or flow looking ugly from using a non-extension
         {
             InteractionElement interactionElement = Item.Button;
             
             var ColourX = Item.NormalColor;
-            var TargetColour = FilesColours.Config.GetValue(ConfigColour);
 
-            if (ColourX.Value.r == TargetColour[0] && ColourX.Value.g == TargetColour[1] && ColourX.Value.b == TargetColour[2] && ColourX.Value.a == TargetColour[3]) // Match only 1:1 same value, disregard loss of precision
+            if (ColourX.Value.r == Colour.r && ColourX.Value.g == Colour.g && ColourX.Value.b == Colour.b && ColourX.Value.a == Colour.a) // Match only 1:1 same value, disregard loss of precision
             {
                 return;
             }
             
-            ColourX.Value = new colorX(TargetColour[0], TargetColour[1], TargetColour[2], TargetColour[3]);
+            ColourX.Value = Colour;
             interactionElement.SetColors(ColourX);
         }
     }

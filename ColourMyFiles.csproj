@@ -12,6 +12,7 @@
         <AssemblyName>ColourMyFiles</AssemblyName>
         <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
@@ -41,6 +42,9 @@
         </Reference>
         <Reference Include="Assembly-CSharp">
           <HintPath>Z:\SteamLibrary\steamapps\common\Resonite\Resonite_Data\Managed\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="Elements.Assets">
+          <HintPath>Z:\SteamLibrary\steamapps\common\Resonite\Resonite_Data\Managed\Elements.Assets.dll</HintPath>
         </Reference>
         <Reference Include="Elements.Core">
           <HintPath>Z:\SteamLibrary\steamapps\common\Resonite\Resonite_Data\Managed\Elements.Core.dll</HintPath>

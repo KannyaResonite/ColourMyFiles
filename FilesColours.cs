@@ -45,44 +45,47 @@ namespace ColourMyFiles
 
         private static bool OnChanges(ref BrowserItem __instance)
         {
-            switch (Path.GetExtension(__instance.Button.Label.Content).ToLower())
+            if (__instance is FileSystemItem)
             {
-                // folders are yellow, so i chose a different colour
-                case ".fbx":
-                case ".obj":
-                case ".dae":
-                case ".gtlf":
-                    __instance.SetColour(MeshColour);
-                    break;
-                
-                case ".png":
-                case ".jpg":
-                case ".jpeg":
-                case ".dds":
-                case ".jfif":
-                case ".webp":
-                case ".tga":
-                case ".gif":
-                case ".exr":
-                    __instance.SetColour(TextureColour);
-                    break;
-                
-                case ".wav":
-                case ".ogg":
-                case ".mp3":
-                case ".wma":
-                    __instance.SetColour(AudioColour);
-                    break;
-                
-                case ".meta":
-                    if (Config.GetValue(HideMetaFiles))
-                    {
-                        __instance.Slot.Destroy();
+                switch (Path.GetExtension(__instance.Button.Label.Content).ToLower())
+                {
+                    // folders are yellow, so i chose a different colour
+                    case ".fbx":
+                    case ".obj":
+                    case ".dae":
+                    case ".gtlf":
+                        __instance.SetColour(MeshColour);
                         break;
-                    }
+                
+                    case ".png":
+                    case ".jpg":
+                    case ".jpeg":
+                    case ".dds":
+                    case ".jfif":
+                    case ".webp":
+                    case ".tga":
+                    case ".gif":
+                    case ".exr":
+                        __instance.SetColour(TextureColour);
+                        break;
+                
+                    case ".wav":
+                    case ".ogg":
+                    case ".mp3":
+                    case ".wma":
+                        __instance.SetColour(AudioColour);
+                        break;
+                
+                    case ".meta":
+                        if (Config.GetValue(HideMetaFiles))
+                        {
+                            __instance.Slot.Destroy();
+                            break;
+                        }
                     
-                    __instance.SetColour(MetaColour);
-                    break;
+                        __instance.SetColour(MetaColour);
+                        break;
+                }
             }
             
             return true;

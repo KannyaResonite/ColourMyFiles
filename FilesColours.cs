@@ -22,13 +22,16 @@ namespace ColourMyFiles
         private static ModConfigurationKey<float4> MeshColour = new ModConfigurationKey<float4>("MeshColour", "The colour for mesh files in the files window.", () => new float4(0f, 0.6f, 0.6f, 1f));
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> TextureColour = new ModConfigurationKey<float4>("TextureColour", "The colour for texture files in the files window.", () => new float4(0.79f, 0.76f, 0.89f, 1f));
+        private static ModConfigurationKey<float4> TextureColour = new ModConfigurationKey<float4>("TextureColour", "The colour for texture files in the files window.", () => new float4(0.20f, 0.15f, 0.30f, 1f));
         
         [AutoRegisterConfigKey]
         private static ModConfigurationKey<float4> AudioColour = new ModConfigurationKey<float4>("AudioColour", "The colour for audio files in the files window.", () => new float4(0.26f, 1f, 0.48f, 1f));
         
         [AutoRegisterConfigKey]
         private static ModConfigurationKey<float4> MetaColour = new ModConfigurationKey<float4>("MetaColour", "The colour for meta files in the files window.", () => new float4(0.26f, 0.08f, 0f, 1f));
+        
+        [AutoRegisterConfigKey]
+        private static ModConfigurationKey<bool> HideMetaFiles = new ModConfigurationKey<bool>("HideMetaFiles", "Whether to hide meta files from the files window entirely.", () => false);
         
         public override void OnEngineInit()
         {
@@ -37,10 +40,10 @@ namespace ColourMyFiles
             
             var harmony = new Harmony("com.Kannya.FilesColours");
             
-            harmony.Patch(typeof(BrowserItem).GetMethod("OnChanges", AccessTools.all), new HarmonyMethod(typeof(FilesColours).GetMethod(nameof(SetColours), BindingFlags.NonPublic | BindingFlags.Static)));
+            harmony.Patch(typeof(BrowserItem).GetMethod("OnChanges", AccessTools.all), new HarmonyMethod(typeof(FilesColours).GetMethod(nameof(OnChanges), BindingFlags.NonPublic | BindingFlags.Static)));
         }
 
-        private static bool SetColours(ref BrowserItem __instance)
+        private static bool OnChanges(ref BrowserItem __instance)
         {
             switch (Path.GetExtension(__instance.Button.Label.Content).ToLower())
             {
@@ -58,6 +61,9 @@ namespace ColourMyFiles
                 case ".dds":
                 case ".jfif":
                 case ".webp":
+                case ".tga":
+                case ".gif":
+                case ".exr":
                     __instance.SetColour(TextureColour);
                     break;
                 
@@ -69,6 +75,12 @@ namespace ColourMyFiles
                     break;
                 
                 case ".meta":
+                    if (Config.GetValue(HideMetaFiles))
+                    {
+                        __instance.Slot.Destroy();
+                        break;
+                    }
+                    
                     __instance.SetColour(MetaColour);
                     break;
             }

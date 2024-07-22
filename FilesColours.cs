@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using Elements.Assets;
 using Elements.Core;
@@ -56,6 +58,34 @@ namespace ColourMyFiles
             harmony.Patch(typeof(BrowserItem).GetMethod("OnChanges", AccessTools.all), new HarmonyMethod(typeof(FilesColours).GetMethod(nameof(OnChanges), BindingFlags.NonPublic | BindingFlags.Static)));
         }
 
+        private static List<string> Audio = new()
+        {
+            ".mp3",
+            ".mpeg3",
+            ".aac",
+            ".ac3",
+            ".aif",
+            ".aiff",
+            ".ape",
+            ".au",
+            ".it",
+            ".mka",
+            ".mod",
+            ".mp1",
+            ".mp2",
+            ".opus",
+            ".s3m",
+            ".sid",
+            ".w64",
+            ".wma",
+            ".xm",
+            ".nsf",
+            ".nsfe",
+            ".gbs",
+            ".vgm",
+            ".gym"
+        };
+
         private static bool OnChanges(ref BrowserItem __instance)
         {
             if (__instance is FileSystemItem fi)
@@ -70,6 +100,13 @@ namespace ColourMyFiles
                     }
                     
                     __instance.SetColour(new colorX(Config.GetValue(MetaColour)));
+                    
+                    return true;
+                }
+                
+                if (Audio.Any(o => o == Path.GetExtension(fi.Name).ToLower()))
+                {
+                    __instance.SetColour(new colorX(Config.GetValue(AudioColour)));
                     
                     return true;
                 }

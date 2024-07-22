@@ -62,9 +62,15 @@ namespace ColourMyFiles
             {
                 var AssetType = AssetHelper.IdentifyClass($"{fi.BasePath}\\{fi.Name}");
                 
-                if (Config.GetValue(HideMetaFiles) && Path.GetExtension(fi.Name).ToLower() == ".meta")
+                if (Path.GetExtension(fi.Name).ToLower() == ".meta")
                 {
-                    __instance.Slot.Destroy();
+                    if (Config.GetValue(HideMetaFiles))
+                    {
+                        __instance.Slot.Destroy();
+                    }
+                    
+                    __instance.SetColour(new colorX(Config.GetValue(MetaColour)));
+                    
                     return true;
                 }
 

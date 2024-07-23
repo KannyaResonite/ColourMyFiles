@@ -22,28 +22,28 @@ namespace ColourMyFiles
         public static ModConfiguration Config;
 
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> MeshColour = new ModConfigurationKey<float4>("MeshColour", "The colour for mesh files in the files window.", () => new float4(0f, 0.6f, 0.6f, 1f));
+        private static ModConfigurationKey<colorX> MeshColour = new ModConfigurationKey<colorX>("MeshColour", "The colour for mesh files in the files window.", () => new colorX(0f, 0.6f, 0.6f, 1f));
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> TextureColour = new ModConfigurationKey<float4>("TextureColour", "The colour for texture files in the files window.", () => new float4(RadiantUI_Constants.Sub.PURPLE.r, RadiantUI_Constants.Sub.PURPLE.g, RadiantUI_Constants.Sub.PURPLE.b, RadiantUI_Constants.Sub.PURPLE.a));
+        private static ModConfigurationKey<colorX> TextureColour = new ModConfigurationKey<colorX>("TextureColour", "The colour for texture files in the files window.", () => RadiantUI_Constants.Sub.PURPLE);
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> AudioColour = new ModConfigurationKey<float4>("AudioColour", "The colour for audio files in the files window.", () => new float4(RadiantUI_Constants.Sub.GREEN.r, RadiantUI_Constants.Sub.GREEN.g, RadiantUI_Constants.Sub.GREEN.b, RadiantUI_Constants.Sub.GREEN.a));
+        private static ModConfigurationKey<colorX> AudioColour = new ModConfigurationKey<colorX>("AudioColour", "The colour for audio files in the files window.", () => RadiantUI_Constants.Sub.GREEN);
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> MetaColour = new ModConfigurationKey<float4>("MetaColour", "The colour for meta files in the files window.", () => new float4(RadiantUI_Constants.Sub.RED.r, RadiantUI_Constants.Sub.RED.g, RadiantUI_Constants.Sub.RED.b, RadiantUI_Constants.Sub.RED.a));
+        private static ModConfigurationKey<colorX> MetaColour = new ModConfigurationKey<colorX>("MetaColour", "The colour for meta files in the files window.", () => RadiantUI_Constants.Sub.RED);
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> ConfigColour = new ModConfigurationKey<float4>("ConfigColour", "The colour for config files in the files window.", () => new float4(RadiantUI_Constants.Sub.ORANGE.r, RadiantUI_Constants.Sub.ORANGE.g, RadiantUI_Constants.Sub.ORANGE.b, RadiantUI_Constants.Sub.ORANGE.a));
+        private static ModConfigurationKey<colorX> ConfigColour = new ModConfigurationKey<colorX>("ConfigColour", "The colour for config files in the files window.", () => RadiantUI_Constants.Sub.ORANGE);
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> TextColour = new ModConfigurationKey<float4>("TextColour", "The colour for text files in the files window.", () => new float4(0.3f, 0.3f, 0.3f, 1f));
+        private static ModConfigurationKey<colorX> TextColour = new ModConfigurationKey<colorX>("TextColour", "The colour for text files in the files window.", () => new colorX(0.3f, 0.3f, 0.3f, 1f));
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> VideoColour = new ModConfigurationKey<float4>("VideoColour", "The colour for video files in the files window.", () => new float4(0f, 0f, 1f, 1f));
+        private static ModConfigurationKey<colorX> VideoColour = new ModConfigurationKey<colorX>("VideoColour", "The colour for video files in the files window.", () => new colorX(0f, 0f, 1f, 1f));
         
         [AutoRegisterConfigKey]
-        private static ModConfigurationKey<float4> DocumentColour = new ModConfigurationKey<float4>("DocumentColour", "The colour for document files in the files window.", () => new float4(0.8f, 0f, 0.8f, 1f));
+        private static ModConfigurationKey<colorX> DocumentColour = new ModConfigurationKey<colorX>("DocumentColour", "The colour for document files in the files window.", () => new colorX(0.8f, 0f, 0.8f, 1f));
         
         [AutoRegisterConfigKey]
         private static ModConfigurationKey<bool> HideMetaFiles = new ModConfigurationKey<bool>("HideMetaFiles", "Whether to hide meta files from the files window entirely.", () => false);
@@ -99,14 +99,14 @@ namespace ColourMyFiles
                         __instance.Slot.Destroy();
                     }
                     
-                    __instance.SetColour(new colorX(Config.GetValue(MetaColour)));
+                    __instance.SetColour(Config.GetValue(MetaColour));
                     
                     return true;
                 }
                 
                 if (Audio.Any(o => o == Path.GetExtension(fi.Name).ToLower()))
                 {
-                    __instance.SetColour(new colorX(Config.GetValue(AudioColour)));
+                    __instance.SetColour(Config.GetValue(AudioColour));
                     
                     return true;
                 }
@@ -128,13 +128,13 @@ namespace ColourMyFiles
         {
             return assetClass switch
             {
-                AssetClass.Audio => new colorX(Config.GetValue(AudioColour)),
-                AssetClass.Document => new colorX(Config.GetValue(DocumentColour)),
-                AssetClass.Text => new colorX(Config.GetValue(TextColour)),
-                AssetClass.Model => new colorX(Config.GetValue(MeshColour)),
-                AssetClass.Object => new colorX(Config.GetValue(ConfigColour)),
-                AssetClass.Texture => new colorX(Config.GetValue(TextureColour)),
-                AssetClass.Video => new colorX(Config.GetValue(VideoColour)),
+                AssetClass.Audio => Config.GetValue(AudioColour),
+                AssetClass.Document => Config.GetValue(DocumentColour),
+                AssetClass.Text => Config.GetValue(TextColour),
+                AssetClass.Model => Config.GetValue(MeshColour),
+                AssetClass.Object => Config.GetValue(ConfigColour),
+                AssetClass.Texture => Config.GetValue(TextureColour),
+                AssetClass.Video => Config.GetValue(VideoColour),
                 _ => null,
             };
         }

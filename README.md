@@ -3,8 +3,7 @@
 A [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader) mod for [Resonite](https://resonite.com/) that adds file category-based colouring to the files browser. Configurable.
 
 ![image](https://github.com/user-attachments/assets/4d20dfb5-b0e5-4c6a-af38-136777a6b0c1)
-![image](https://github.com/user-attachments/assets/ad417237-2bda-4cf4-b75e-3f0ad1094831)
-
+![image](https://github.com/user-attachments/assets/176cf717-8b68-42e1-8a15-586a827ee94c)
 
 ## Installation
 1. Install [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader).

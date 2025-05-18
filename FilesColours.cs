@@ -18,7 +18,7 @@ namespace ColourMyFiles
 
         public override string Author => "Kannya";
 
-        public override string Version => "1.0.0";
+        public override string Version => "1.0.1";
         
         public override string Link => "https://github.com/KannyaResonite/ColourMyFiles/";
         

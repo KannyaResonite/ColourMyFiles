@@ -7,6 +7,7 @@ using Elements.Core;
 using FrooxEngine;
 using FrooxEngine.UIX;
 using HarmonyLib;
+using ResoniteHotReloadLib;
 using ResoniteModLoader;
 
 namespace ColourMyFiles
@@ -18,6 +19,8 @@ namespace ColourMyFiles
         public override string Author => "Kannya";
 
         public override string Version => "1.0.0";
+        
+        public override string Link => "https://github.com/KannyaResonite/ColourMyFiles/";
         
         public static ModConfiguration Config;
 
@@ -48,14 +51,28 @@ namespace ColourMyFiles
         [AutoRegisterConfigKey]
         private static ModConfigurationKey<bool> HideMetaFiles = new ModConfigurationKey<bool>("HideMetaFiles", "Whether to hide meta files from the files window entirely.", () => false);
         
-        public override void OnEngineInit()
+        static void BeforeHotReload()
         {
-            Config = GetConfiguration();
+            harmony?.UnpatchAll("com.Kannya.FilesColours");
+        }
+
+        static void OnHotReload(ResoniteMod modInstance)
+        {
+            Config = modInstance.GetConfiguration();
             Config?.Save(true);
             
-            var harmony = new Harmony("com.Kannya.FilesColours");
+            harmony = new Harmony("com.Kannya.FilesColours");
             
             harmony.Patch(typeof(BrowserItem).GetMethod("OnChanges", AccessTools.all), new HarmonyMethod(typeof(FilesColours).GetMethod(nameof(OnChanges), BindingFlags.NonPublic | BindingFlags.Static)));
+        }
+
+        private static Harmony harmony;
+        
+        public override void OnEngineInit()
+        {
+            OnHotReload(this);
+            
+            HotReloader.RegisterForHotReload(this);
         }
 
         private static List<string> Audio = new()
@@ -135,6 +152,7 @@ namespace ColourMyFiles
                 AssetClass.Object => Config.GetValue(ConfigColour),
                 AssetClass.Texture => Config.GetValue(TextureColour),
                 AssetClass.Video => Config.GetValue(VideoColour),
+                //AssetClass.Animation => Config.GetValue(),
                 _ => null,
             };
         }
